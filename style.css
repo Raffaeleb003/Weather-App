@@ -90,3 +90,8 @@ body{
     margin-left: -16px;
 }
 
+.weather-box .temperature span {
+    position: absolute;
+    margin-left: 4px;
+    font-size: 1.5rem;
+}
