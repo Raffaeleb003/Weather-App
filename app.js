@@ -1,80 +1,51 @@
 const container = document.querySelector('.container');
-const search = document.querySelector('.search-box button');
+const form = document.querySelector('.search-box');
 const weatherBox = document.querySelector('.weather-box');
 const weatherDetails = document.querySelector('.weather-details');
 const error404 = document.querySelector('.not-found');
 
-search.addEventListener('click', () => {
+form.addEventListener('submit', (event) => {
+  event.preventDefault(); // Prevent form submission
 
-    const APIKey = '9225682e424b364189b1174a1bd601e9';
-    const city = document.querySelector('.search-box input').value;
+  const input = document.querySelector('.search-box input');
+  const city = input.value;
 
-    if (city === '')
-        return;
+  // Make the API request
+  fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&appid=9264eb5bc20aa579b62b3bd0f17dad64`)
+    .then(response => response.json())
+    .then(data => {
+      if (data.cod === '404') {
+        // Show error message for invalid location
+        container.classList.add('error');
+        weatherBox.classList.remove('fadeIn');
+        weatherDetails.classList.remove('fadeIn');
+        error404.style.display = 'block';
+      } else {
+        // Update weather information
+        container.classList.remove('error');
+        error404.style.display = 'none';
 
-    fetch(`https://api.openweathermap.org/data/2.5/weather?q=${city}&units=metric&appid=${APIKey}`)
-        .then(response => response.json())
-        .then(json => {
+        const temperatureElement = document.querySelector('.temperature');
+        const descriptionElement = document.querySelector('.description');
+        const humidityElement = document.querySelector('.humidity span');
+        const windElement = document.querySelector('.wind span');
 
-            if (json.cod === '404') {
-                container.style.height = '400px';
-                weatherBox.style.display = 'none';
-                weatherDetails.style.display = 'none';
-                error404.style.display = 'block';
-                error404.classList.add('fadeIn');
-                return;
-            }
+        const temperature = Math.round(data.main.temp - 273.15); // Convert temperature from Kelvin to Celsius
+        const description = data.weather[0].description;
+        const humidity = data.main.humidity;
+        const windSpeed = data.wind.speed;
 
-            error404.style.display = 'none';
-            error404.classList.remove('fadeIn');
+        temperatureElement.innerHTML = `${temperature}°C`;
+        descriptionElement.innerHTML = description;
+        humidityElement.innerHTML = `${humidity}%`;
+        windElement.innerHTML = `${windSpeed} m/s`;
 
-            const image = document.querySelector('.weather-box img');
-            const temperature = document.querySelector('.weather-box .temperature');
-            const description = document.querySelector('.weather-box .description');
-            const humidity = document.querySelector('.weather-details .humidity span');
-            const wind = document.querySelector('.weather-details .wind span');
-
-            switch (json.weather[0].main) {
-                case 'Clear':
-                    image.src = 'images/clear.png';
-                    break;
-
-                case 'Rain':
-                    image.src = 'images/rain.png';
-                    break;
-
-                case 'Snow':
-                    image.src = 'images/snow.png';
-                    break;
-
-                case 'Clouds':
-                    image.src = 'images/cloud.png';
-                    break;
-
-                case 'Haze':
-                    image.src = 'images/mist.png';
-                    break;
-
-                default:
-                    image.src = '';
-            }
-
-            temperature.innerHTML = `${parseInt(json.main.temp)}<span>°C</span>`;
-            description.innerHTML = `${json.weather[0].description}`;
-            humidity.innerHTML = `${json.main.humidity}%`;
-            wind.innerHTML = `${parseInt(json.wind.speed)}Km/h`;
-
-            weatherBox.style.display = '';
-            weatherDetails.style.display = '';
-            weatherBox.classList.add('fadeIn');
-            weatherDetails.classList.add('fadeIn');
-            container.style.height = '590px';
-
-
-        });
-
-
+        // Show weather information
+        weatherBox.classList.add('fadeIn');
+        weatherDetails.classList.add('fadeIn');
+      }
+    })
+    .catch(error => {
+      console.error('Error:', error);
+    });
 });
-
-
-
