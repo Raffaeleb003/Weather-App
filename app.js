@@ -1,12 +1,10 @@
 const container = document.querySelector('.container');
-const form = document.querySelector('.search-box');
+const searchButton = document.querySelector('.search-box button');
 const weatherBox = document.querySelector('.weather-box');
 const weatherDetails = document.querySelector('.weather-details');
 const error404 = document.querySelector('.not-found');
 
-form.addEventListener('submit', (event) => {
-  event.preventDefault(); // Prevent form submission
-
+searchButton.addEventListener('click', () => {
   const input = document.querySelector('.search-box input');
   const city = input.value;
 
@@ -49,3 +47,4 @@ form.addEventListener('submit', (event) => {
       console.error('Error:', error);
     });
 });
+
